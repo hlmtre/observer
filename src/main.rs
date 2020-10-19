@@ -41,7 +41,8 @@ fn main() {
           .spawn()
           .expect("failed to start target process");
       }
+    } else {
+      thread::sleep(time::Duration::from_millis(5000));
     }
-    thread::sleep(time::Duration::from_millis(5000));
   }
 }
