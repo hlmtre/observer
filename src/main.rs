@@ -3,12 +3,13 @@ extern crate sysinfo;
 use std::process::Command;
 use std::{thread, time};
 use sysinfo::ProcessStatus;
-use sysinfo::{ProcessExt, SystemExt};
+use sysinfo::{ProcessExt, RefreshKind, SystemExt};
 
 fn main() {
   let trigger_process_name = "htop";
   let target_process_name = "pavucontrol";
-  let mut s = sysinfo::System::new_all();
+  let r = RefreshKind::new();
+  let mut s = sysinfo::System::new_with_specifics(r.with_processes());
   loop {
     s.refresh_processes();
     let processes = s.get_process_by_name(trigger_process_name);
