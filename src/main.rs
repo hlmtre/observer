@@ -35,12 +35,16 @@ fn main() {
             }
           }
         }
-        /// Windows has only Run in the ProcessStatus enum
+        // Windows has only Run in the ProcessStatus enum
         #[cfg(target_os = "windows")]
         {
           match tp.status() {
             ProcessStatus::Run => {
-              println!("target {} already running. {} instances already.", target_process_path, target_processes.len());
+              println!(
+                "target {} already running. {} instances already.",
+                target_process_path,
+                target_processes.len()
+              );
               thread::sleep(time::Duration::from_millis(5000));
               continue;
             }
