@@ -19,19 +19,39 @@ fn main() {
       println!("found process {}!", trigger_process_name);
       if target_processes.len() > 0 {
         for tp in target_processes {
-          match tp.status() {
-            ProcessStatus::Run | ProcessStatus::Sleep | ProcessStatus::Idle => {
-              // our target is already running
-              println!("target already running");
-              thread::sleep(time::Duration::from_millis(5000));
-              continue;
+          #[cfg(target_os = "linux")]
+          {
+            match tp.status() {
+              ProcessStatus::Run | ProcessStatus::Sleep | ProcessStatus::Idle => {
+                println!("target already running");
+                thread::sleep(time::Duration::from_millis(5000));
+                continue;
+              }
+              _ => {
+                // any other case...
+                println!("spawning process {}", target_process_name);
+                Command::new(target_process_name)
+                  .spawn()
+                  .expect("failed to start target process");
+              }
             }
-            _ => {
-              // any other case...
-              println!("spawning process {}", target_process_name);
-              Command::new(target_process_name)
-                .spawn()
-                .expect("failed to start target process");
+          }
+          /// Windows has only Run in the ProcessStatus enum
+          #[cfg(target_os = "windows")]
+          {
+            match tp.status() {
+              ProcessStatus::Run => {
+                println!("target already running");
+                thread::sleep(time::Duration::from_millis(5000));
+                continue;
+              }
+              _ => {
+                // any other case...
+                println!("spawning process {}", target_process_name);
+                Command::new(target_process_name)
+                  .spawn()
+                  .expect("failed to start target process");
+              }
             }
           }
         }
