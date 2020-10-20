@@ -45,13 +45,6 @@ fn main() {
                 thread::sleep(time::Duration::from_millis(5000));
                 continue;
               }
-              _ => {
-                // any other case...
-                println!("spawning process {}", target_process_name);
-                Command::new(target_process_name)
-                  .spawn()
-                  .expect("failed to start target process");
-              }
             }
           }
         }
