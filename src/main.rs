@@ -19,7 +19,7 @@ struct Obs {
 
 impl Obs {
   fn is_valid(&self) -> bool {
-    if self.target_process_name.len() > 0 && self.target_process_path.len() > 0 {
+    if self.target_process_name.len() > 0 && self.trigger_process_name.len() > 0 {
       return true;
     }
     return false;
@@ -36,7 +36,7 @@ fn main() {
   let o = match obs_or_err {
     Ok(k) => k,
     Err(e) => {
-      eprintln!("couldn't find assumed ./observer.conf. error: {}", e);
+      eprintln!("error within or opening ./observer.conf. error: {}", e);
       process::exit(1);
     }
   };
