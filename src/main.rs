@@ -41,6 +41,8 @@ fn main() {
     }
   };
 
+  // all this string type juggling is to
+  // prevent temporary value dropped while borrowed
   let trigger_process_name = o.trigger_process_name.replace("\"", "");
   let f = o.target_process_path.replace("\"", "");
   let target_process_path = f.trim().to_string();
@@ -51,7 +53,6 @@ fn main() {
   let mut s = sysinfo::System::new_with_specifics(r.with_processes());
   loop {
     s.refresh_processes();
-    // prevent temporary value dropped while borrowed
     let processes = s.get_process_by_name(tr);
     let target_processes = s.get_process_by_name(ta);
     if cfg!(debug_assertions) {
