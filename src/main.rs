@@ -112,10 +112,13 @@ fn main() {
           .unwrap();
         let _ = std::env::set_current_dir(pdir);
         let mut c = Command::new(target_process_path.clone());
+        // if arguments are specified in the config file
         if o.target_args.len() > 0 {
-          // if arguments are specified in the config file
           let s = o.target_args.replace("\"", "");
           a.append(s.split(" ").collect::<Vec<&str>>().as_mut());
+          // remove that initial empty string item
+          // some programs see the empty string and get mad
+          a.retain(|&i| i.len() > 0);
           c.args(a);
         }
         c.spawn().expect("ohtehnoes");
