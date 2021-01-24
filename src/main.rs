@@ -1,11 +1,11 @@
 extern crate sysinfo;
 
-use std::io;
-use std::io::Error;
-use std::io::ErrorKind;
-use std::io::{BufRead, BufReader};
-use std::{fs::File, process};
-use std::{process::Command, thread, time};
+use std::{
+  fs::File,
+  io::{self, BufRead, BufReader, Error, ErrorKind},
+  process::{self, Command},
+  thread, time,
+};
 use sysinfo::{ProcessExt, ProcessStatus, RefreshKind, SystemExt};
 use time::Duration;
 
@@ -56,7 +56,7 @@ fn main() {
     let processes = s.get_process_by_name(tr);
     let target_processes = s.get_process_by_name(ta);
     if cfg!(debug_assertions) {
-      eprintln!("looking for process {}", tr);
+      eprintln!("looking for process {}; would spawn {}", tr, ta);
     }
     if processes.len() > 0 {
       if cfg!(debug_assertions) {
@@ -136,7 +136,10 @@ fn open_config(path: &str) -> Result<Obs, io::Error> {
   let b = BufReader::new(f);
   for l in b.lines() {
     let a = l.unwrap();
-    if a.starts_with("trigger_process_name") {
+    if a.starts_with("target_process_name") {
+      let el: Vec<&str> = a.split("=").collect();
+      o.target_process_name = el[1].to_string();
+    } else if a.starts_with("trigger_process_name") {
       let el: Vec<&str> = a.split("=").collect();
       o.trigger_process_name = el[1].to_string();
     } else if a.starts_with("target_process_path") {
@@ -147,9 +150,9 @@ fn open_config(path: &str) -> Result<Obs, io::Error> {
       o.target_args = el[1].to_string();
     }
   }
-  if o.target_process_path.len() > 0 {
-    o.target_process_name = o.target_process_path.clone()
-  }
+  //if o.target_process_path.len() > 0 {
+  //  o.target_process_name = o.target_process_path.clone()
+  //}
   if !o.is_valid() {
     return Err(Error::new(ErrorKind::Other, "invalid config!"));
   }
